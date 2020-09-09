@@ -1,0 +1,390 @@
+import {
+  CodeSurfer,
+  CodeSurferColumns,
+  Step,
+} from "code-surfer";
+import { github, vsDark } from "@code-surfer/themes";
+
+import { themes, Appear, Notes } from 'mdx-deck'
+
+import List from './src/list';
+
+export const theme = themes.future
+
+<Head>
+  <title>Angular CLI</title>
+</Head>
+
+## Angular CLI
+
+
+---
+
+#### Agenda
+
+<ul style={{
+      fontSize: '30px',
+      paddingLeft: '0',
+    }}>
+
+* Intro
+* Why yet another CLI 
+* Design Philosophy 
+* Schematics 
+* AST manipulations 
+* Nx Workspace 
+
+</ul>
+
+---
+
+<span>ng</span>
+
+<div>
+<ul style={{ fontSize: '30px' }}>
+  <Appear>
+    <li>Scaffolding Tool - used to initialize project</li>
+    <li>Used to run, build, test Angular apps</li>
+  </Appear>
+</ul>
+</div>
+
+---
+
+<span style={{fontSize: '90px'}}>🤔</span>
+
+Why do we need yet another CLI ?
+
+---
+
+Existing scaffolding tools
+
+<ul style={{ fontSize: '30px' }}>
+<Appear>
+  <li> with NPM - eg: npm init react-app my-app</li>
+  <li> with Yarn - eg: yarn create react-app my-app</li>
+  <li> with Yeoman - eg: yo ng2-webpack [project-name]</li>
+</Appear>
+</ul>
+
+---
+
+Differences
+
+<ul style={{ fontSize: '30px' }}>
+<Appear>
+  <li>static templates</li>
+  <li>no option for user to customize the app</li>
+  <li>once repo is created, the tool is of no use</li>
+</Appear>
+</ul>
+
+---
+
+```
+ng new test --dry-run
+```
+
+<Notes>
+
+- run the command
+- talk about interactivity, dynamic nature
+
+</Notes>
+
+---
+
+Goals:
+<List>
+
+- initialize a project
+- add features
+- update to latest version of framework
+
+</List>
+
+<Notes>
+
+- these are phases a project goes through
+- discuss how angular cli is designed to help in all these phases
+- talk about lazy route generation
+
+</Notes>
+
+---
+
+Commands
+
+<List>
+
+<Appear>
+<li> ng generate</li>
+<li> ng add 
+
+```ng add @angular/pwa```
+</li>
+<li> ng update </li>
+
+</Appear>
+
+</List>
+
+---
+
+### Schematics
+
+
+---
+
+<List>
+
+- Term used in the Angular CLI context to denote change in source code
+- whenever ng g, ng add, ng update is executed, Schematics take care of tranforming the project
+
+</List>
+
+---
+
+<List>
+
+<li>how does `ng generate component` work?</li>
+<Appear>
+<li>Gets current file structure as input tree</li>
+<li>applies rule or chain of rules</li>
+</Appear>
+
+</List>
+
+---
+
+<CodeSurfer>
+
+```ts 3,6 subtitle="generator function which returns a Rule"
+import { Rule, SchematicContext, Tree } from '@angular-devkit/schematics';
+
+export function sample(options: any): Rule {
+
+
+}
+```
+
+```ts 4,6,7 subtitle="takes input a tree, applies any modification and returns it"
+import { Rule, SchematicContext, Tree } from '@angular-devkit/schematics';
+
+export function sample(options: any): Rule {
+  return (tree: Tree) => {
+      
+      return tree;
+  }
+}
+```
+
+```ts 5 subtitle="creates a file hello.ts with 'world' as content"
+import { Rule, SchematicContext, Tree } from '@angular-devkit/schematics';
+
+export function sample(options: any): Rule {
+  return (tree: Tree) => {
+      tree.create('hello.ts', 'world');
+      return tree;
+  }
+}
+```
+
+```ts 3:8
+import { Rule, SchematicContext, Tree } from '@angular-devkit/schematics';
+
+export function sample(options: any): Rule {
+  return (tree: Tree) => {
+      tree.create('hello.ts', 'world');
+      return tree;
+  }
+}
+```
+
+
+</CodeSurfer>
+
+---
+
+Demo
+
+<Notes>
+
+- small schematics sample
+  - which takes file name as input and cretes that file
+- show angular g c schematic function
+
+</Notes>
+
+---
+
+Architecture
+
+<List>
+
+- this is where ng CLI stands out
+- fail safe
+
+</List>
+
+<Notes>
+
+- show a scenario where schematics fails
+
+</Notes>
+
+---
+
+<List>
+
+<li>Internally it creates a virtual file system</li>
+<Appear>
+
+<li>changes are done to that FS i.e., 'tree'</li>
+<li>finally, this 'tree' is merged to original FS</li>
+
+</Appear>
+
+</List>
+
+<Notes>
+
+- compare with direct FS manipulations
+
+</Notes>
+
+---
+
+How source code transformation happens ?
+
+<Notes>
+
+- app.module.ts updation
+- drawbacks of string manipulations
+
+</Notes>
+
+---
+
+AST manipulations
+
+<Notes>
+
+- https://astexplorer.net/
+
+</Notes>
+
+---
+
+<List>
+
+<li>what is an AST ?</li>
+<Appear>
+
+<li>representation of source code</li>
+<li>programatically analyze the source code</li>
+<li>transform the generated AST and transpile it back to source code</li>
+
+</Appear>
+
+</List>
+
+<Notes>
+
+- ng g c @schematics/angular
+
+</Notes>
+
+---
+
+<code>ng update</code>
+
+---
+
+<CodeSurferColumns>
+
+<Step subtitle="ng v7 to v8">
+
+```js
+loadChildren: './admin/admin.module#AdminModule',
+```
+
+```js
+loadChildren: () => import('./in/in.module').then(m => m.InModule)
+```
+
+</Step>
+
+<Step subtitle="ng v7 to v8">
+
+```js 3
+loadChildren: './admin/admin.module#AdminModule',
+
+@ViewChild('grid')
+```
+
+```js 3
+loadChildren: () => import('./in/in.module').then(m => m.InModule)
+
+@ViewChild('grid', {static: boolean})
+```
+
+</Step>
+
+</CodeSurferColumns>
+
+<Notes>
+
+- demo of v7 to v8 migration
+
+</Notes>
+
+---
+
+<List>
+
+<li>designed to be completely pluggable and extensible</li>
+<Appear>
+
+<li>integrates with any framework</li>
+<li>if react schematics/builders are used, works as react cli</li>
+
+</Appear>
+
+</List>
+
+---
+
+Nx Workspace
+
+---
+
+How can we, as an organisation leverage this ?
+
+---
+
+#### Recap
+
+<ul style={{
+      fontSize: '30px',
+      paddingLeft: '0',
+    }}>
+
+* comparision with other cli's 
+* Virtual File System
+* Fail safe mechanisms
+* Schematics
+* AST manipulations
+* Nx Workspace
+
+</ul>
+
+---
+
+
+Q & A ❔
+
+---
+
+Thank you
+
