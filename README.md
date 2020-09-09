@@ -1,8 +1,13 @@
-# MDX Deck + Code Surfer template
+# Angular CLI Deck
+
+https://ayudh-ng-cli-deck.netlify.app/
+
+
+## MDX Deck + Code Surfer template
 
 This project was generated with the `npm init code-surfer-deck` command.
 
-## Development
+### Development
 
 To run the presentation deck in development mode:
 
@@ -12,7 +17,7 @@ npm start
 
 Edit the [`deck.mdx`](deck.mdx) file to get started.
 
-## Exporting
+### Exporting
 
 To build the presentation deck:
 
