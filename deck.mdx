@@ -8,6 +8,7 @@ import { github, vsDark } from "@code-surfer/themes";
 import { themes, Appear, Notes } from 'mdx-deck'
 
 import List from './src/list';
+import architecture from './architecture.png';
 
 export const theme = themes.future
 
@@ -158,7 +159,7 @@ Commands
 
 <CodeSurfer>
 
-```ts 3,6 subtitle="generator function which returns a Rule"
+```ts 3,6 subtitle="factory function which returns a Rule"
 import { Rule, SchematicContext, Tree } from '@angular-devkit/schematics';
 
 export function sample(options: any): Rule {
@@ -362,6 +363,10 @@ Builders
 - Builders is the execution API of ng cli
 
 </List>
+
+---
+
+<img src={architecture} />
 
 ---
 
